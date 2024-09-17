@@ -1,37 +1,27 @@
 import base64
 import vertexai
-from vertexai.preview.generative_models import GenerativeModel, Part, SafetySetting, Tool
-from vertexai.preview.generative_models import grounding
-
-
-PROJECT_ID = "Enter your project ID here"
-REGION = "us-central1"
-MODEL_ID = "gemini-1.5-pro-001"
+from vertexai.generative_models import GenerativeModel, Part, SafetySetting
 
 
 def generate():
-    vertexai.init(project=PROJECT_ID, location=REGION)
+    vertexai.init(project="fresh-span-400217", location="us-central1")
     model = GenerativeModel(
-        MODEL_ID,
-        tools=tools,
+        "gemini-pro-experimental",
         system_instruction=[textsi_1]
     )
     responses = model.generate_content(
-        ["""What is the latest news?"""],
+        ["""In how many ways can 2024 be expressed as the sum of two or more consecutive positive integers?"""],
         generation_config=generation_config,
         safety_settings=safety_settings,
         stream=True,
     )
 
     for response in responses:
-        if not response.candidates[0].content.parts:
-            continue
         print(response.text, end="")
 
 textsi_1 = """You are an AI assistant that uses a Chain of Thought (CoT) approach with reflection to answer queries. Follow these steps:
 
 Clarify the query if needed, asking for additional information within the <clarification> tags.
-
 Think through the problem step by step within the <thinking> tags. For complex queries, break down into subtasks.
 
 Reflect on your thinking to check for errors, improvements, or alternative approaches within the <reflection> tags.
@@ -46,8 +36,11 @@ The <clarification>, <thinking>, and <reflection> sections are for your internal
 
 Use this format:
 <clarification>[If needed]</clarification>
+
 <thinking>[Step-by-step reasoning]</thinking>
+
 <reflection>[Review of reasoning]</reflection>
+
 <output>[Final, concise answer with confidence level]</output>
 
 For follow-up questions, refer to previous steps as needed and adjust your approach accordingly.
@@ -55,7 +48,7 @@ For follow-up questions, refer to previous steps as needed and adjust your appro
 
 generation_config = {
     "max_output_tokens": 8192,
-    "temperature": 1,
+    "temperature": 0,
     "top_p": 0.95,
 }
 
@@ -78,9 +71,4 @@ safety_settings = [
     ),
 ]
 
-tools = [
-    Tool.from_google_search_retrieval(
-        google_search_retrieval=grounding.GoogleSearchRetrieval()
-    ),
-]
 generate()
