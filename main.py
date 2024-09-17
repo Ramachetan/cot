@@ -2,11 +2,15 @@ import base64
 import vertexai
 from vertexai.generative_models import GenerativeModel, Part, SafetySetting
 
+PROJECT_ID = "Enter your project ID here"
+REGION = "us-central1"
+MODEL_NAME = "gemini-pro-experimental"
+
 
 def generate():
-    vertexai.init(project="fresh-span-400217", location="us-central1")
+    vertexai.init(project=PROJECT_ID, location=REGION)
     model = GenerativeModel(
-        "gemini-pro-experimental",
+        MODEL_NAME,
         system_instruction=[textsi_1]
     )
     responses = model.generate_content(
